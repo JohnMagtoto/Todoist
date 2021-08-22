@@ -5,9 +5,7 @@ services:
     build:
       dockerfile: ./todoist-ui/Dockerfile
       context: .
-      target: development
-    environment:
-      CHOKIDAR_USEPOLLING: "true"
+      target: production
     volumes:
       # Mount the container's node-modules so that it live-reload
       # can also monitor it
@@ -16,8 +14,7 @@ services:
       # (useful in live-reload/hot-reload)
       - ./todoist-ui:/usr/src/ui
     ports:
-      - 3000:3000
-    command: npm start
+      - 80:80
     depends_on:
       - api
 
@@ -27,21 +24,12 @@ services:
       # Target the nested Dockerfile in todoist-server folder
       dockerfile: ./todoist-server/Dockerfile
       context: .
-      # Only build development stage from ./todoist-server/Dockerfile
-      target: development
-    environment:
-      CHOKIDAR_USEPOLLING: "true"
-    volumes:
-      # Mount the todoist-server directory to monitor for file changes
-      # (useful in live-reload/hot-reload)
-      - ./todoist-server:/usr/src/api
-      # Mount the container's node-modules so that it live-reload
-      # can also monitor it
-      - /usr/src/api/node_modules
+      # Build production stage from ./todoist-server/Dockerfile
+      target: production
     ports:
       - 5000:5000
-    # Run API in watch mode (for live-reloading)
-    command: npm run start:dev
+    # Run api container
+    command: npm run start:prod
     depends_on:
       - todoistdb
 
